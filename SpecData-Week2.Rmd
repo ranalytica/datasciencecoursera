@@ -1,0 +1,130 @@
+---
+title: "R Assignemtn - Week 2 SpecData"
+output: html_notebook
+---
+
+
+## First Step
+Download the data from web url
+
+```{r}
+rm(list=ls())
+```
+
+
+
+```{r}
+Data_Url <- "https://d396qusza40orc.cloudfront.net/rprog%2Fdata%2Fspecdata.zip"
+download.file(Data_Url, "spec_data.zip")
+```
+
+
+## Second Step
+Unzip to current working directory
+```{r}
+unzip("spec_data.zip", exdir = "/Users/richardn/Portfolio/datasciencecoursera")
+
+```
+
+# 3rd step review the data inside the folder
+```{r}
+list.files("specdata")
+```
+
+## Fourth Step combine the file into one data.frame - some of the codes are recycled from the practice assignment for week 1.  
+```{r}
+rawData <- list.files("specdata", full.names = TRUE)
+str(rawData)
+```
+
+```{r}
+rawDF<-lapply(rawData, read.csv)
+output <- do.call(rbind,rawDF)
+```
+
+```{r}
+output2 <- read.csv(rawDF)
+```
+
+
+
+
+```{r}
+head(output)
+tail(output)
+summary(output)
+str(output)
+```
+Part 1
+Write a function named 'pollutantmean' that calculates the mean of a pollutant (sulfate or nitrate) across a specified list of monitors. The function 'pollutantmean' takes three arguments: 'directory', 'pollutant', and 'id'. Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA. A prototype of the function is as follows
+
+
+```{r}
+pollutantmean <- function(directory,id = 1:332) {
+  
+
+  dat <- data.frame() 
+  files_list <- list.files(directory, full.names=TRUE)
+  
+  for (i in id) { #loops through the files, rbinding them together
+    dat <- rbind(dat, read.csv(files_list[i]))
+  }
+    
+  dat
+  
+  
+}
+
+
+        
+
+```
+
+```{r}
+filedf <-data.frame(pollutantmean("specdata"))
+```
+
+
+
+```{r}
+identical(output,filedf)
+```
+
+
+```{r}
+pollutantmean("specdata", pollutant = "sulfate", id=1:10)
+```
+```{r}
+pollutantmean <- function(directory, pollutant, id = 1:332) {
+    ## 'directory' is a character vector of length 1 indicating
+    ## the location of the CSV files
+    
+    ## 'pollutant' is a character vector of length 1 indicating
+    ## the name of  the pollutant for which we will calcultate the
+    ## mean; either "sulfate" or "nitrate"
+    
+    ## 'id' is an integer vector indicating the monitor ID numbers
+    ## to be used
+    
+    ## Return the mean of the pollutant across all monitors list
+    ## in the 'id' vector (ignoring NA values)
+    ## NOTE: Do not round the result
+    means <- c()
+    
+    for(monitor in id){
+        path <- paste(getwd(), "/", directory, "/", sprintf("%03d", monitor), ".csv", sep = "")
+        monitor_data <- read.csv(path)
+        interested_data <- monitor_data[pollutant]
+        means <- c(means, interested_data[!is.na(interested_data)])
+    }
+    
+    mean(means)
+}
+```
+
+```{r}
+library(tidyverse)
+path <- paste(getwd(), "/", directory, "/", sprintf("%03d", monitor), ".csv", sep = "")
+path("specdata")
+```
+
